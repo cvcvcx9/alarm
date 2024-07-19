@@ -1,22 +1,26 @@
 import 'dart:io';
 
 import 'package:alarm/alarm.dart';
+import 'package:alarm_example/util/GroupAlarm.dart';
+import 'package:alarm_example/util/periodic_alarms.dart';
+import 'package:alarm_example/widgets/weekdayButton.dart';
 import 'package:flutter/material.dart';
 
-class ExampleAlarmEditScreen extends StatefulWidget {
-  const ExampleAlarmEditScreen({super.key, this.alarmSettings});
+class AlarmEditScreen extends StatefulWidget {
+  const AlarmEditScreen({super.key, this.groupAlarm,this.alarmWeekDays});
 
-  final AlarmSettings? alarmSettings;
-
+  final GroupAlarm? groupAlarm;
+  final List<int>? alarmWeekDays;
   @override
-  State<ExampleAlarmEditScreen> createState() => _ExampleAlarmEditScreenState();
+  State<AlarmEditScreen> createState() => _AlarmEditScreenState();
 }
 
-class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
+class _AlarmEditScreenState extends State<AlarmEditScreen> {
   bool loading = false;
 
   late bool creating;
   late DateTime selectedDateTime;
+  late List<int> selectedWeekdays;
   late bool loopAudio;
   late bool vibrate;
   late double? volume;
@@ -25,21 +29,23 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   @override
   void initState() {
     super.initState();
-    creating = widget.alarmSettings == null;
+    creating = widget.groupAlarm == null;
 
     if (creating) {
       selectedDateTime = DateTime.now().add(const Duration(minutes: 1));
       selectedDateTime = selectedDateTime.copyWith(second: 0, millisecond: 0);
+      selectedWeekdays = [];
       loopAudio = true;
       vibrate = true;
       volume = null;
       assetAudio = 'assets/marimba.mp3';
     } else {
-      selectedDateTime = widget.alarmSettings!.dateTime;
-      loopAudio = widget.alarmSettings!.loopAudio;
-      vibrate = widget.alarmSettings!.vibrate;
-      volume = widget.alarmSettings!.volume;
-      assetAudio = widget.alarmSettings!.assetAudioPath;
+      selectedWeekdays = widget.groupAlarm!.getGroupAlarmWeekDays();
+      selectedDateTime = widget.groupAlarm!.alarms[0].dateTime;
+      loopAudio = widget.groupAlarm!.alarms[0].loopAudio;
+      vibrate = widget.groupAlarm!.alarms[0].vibrate;
+      volume = widget.groupAlarm!.alarms[0].volume;
+      assetAudio = widget.groupAlarm!.alarms[0].assetAudioPath;
     }
   }
 
@@ -83,37 +89,59 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
     }
   }
 
-  AlarmSettings buildAlarmSettings() {
-    final id = creating
-        ? DateTime.now().millisecondsSinceEpoch % 10000 + 1
-        : widget.alarmSettings!.id;
+  // AlarmSettings buildAlarmSettings() {
+  //   final id = creating
+  //       ? DateTime.now().millisecondsSinceEpoch % 10000 + 1
+  //       : widget.groupAlarm!.groupId;
+  //
+  //   final alarmSettings = AlarmSettings(
+  //     id: id,
+  //     dateTime: selectedDateTime,
+  //     loopAudio: loopAudio,
+  //     vibrate: vibrate,
+  //     volume: volume,
+  //     assetAudioPath: assetAudio,
+  //     notificationTitle: 'Alarm example',
+  //     notificationBody: 'Your alarm ($id) is ringing',
+  //     enableNotificationOnKill: Platform.isIOS,
+  //   );
+  //   return alarmSettings;
+  // }
 
-    final alarmSettings = AlarmSettings(
-      id: id,
-      dateTime: selectedDateTime,
-      loopAudio: loopAudio,
-      vibrate: vibrate,
-      volume: volume,
-      assetAudioPath: assetAudio,
-      notificationTitle: 'Alarm example',
-      notificationBody: 'Your alarm ($id) is ringing',
-      enableNotificationOnKill: Platform.isIOS,
-    );
-    return alarmSettings;
-  }
-
-  void saveAlarm() {
+  void saveAlarm() async{
     if (loading) return;
     setState(() => loading = true);
-    Alarm.set(alarmSettings: buildAlarmSettings()).then((res) {
-      if (res) Navigator.pop(context, true);
-      setState(() => loading = false);
+
+
+    await periodicAlarms(widget.groupAlarm?.groupId,selectedWeekdays, selectedDateTime.hour, selectedDateTime.minute,"알람입니다.","알람입니다.",assetAudio)
+    .then((res){
+      if (res) Navigator.pop(context,true);
+      setState(() {
+        loading = false;
+      });
     });
+    // Alarm.set(alarmSettings: buildAlarmSettings()).then((res) {
+    //   if (res) Navigator.pop(context, true);
+    //   setState(() => loading = false);
+    // });
   }
 
   void deleteAlarm() {
-    Alarm.stop(widget.alarmSettings!.id).then((res) {
-      if (res) Navigator.pop(context, true);
+
+    widget.groupAlarm?.removeGroupAlarm().then((res) {
+      if (res) {
+        Navigator.pop(context, true);
+      }
+    });
+  }
+
+  void _toggleDay(int value) {
+    setState(() {
+      if (selectedWeekdays.contains(value)) {
+        selectedWeekdays.remove(value);
+      } else {
+        selectedWeekdays.add(value);
+      }
     });
   }
 
@@ -172,6 +200,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ),
           ),
+          WeekdayButtons(selectedValues: selectedWeekdays,toggleDay: _toggleDay),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

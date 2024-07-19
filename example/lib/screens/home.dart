@@ -4,6 +4,8 @@ import 'package:alarm/alarm.dart';
 import 'package:alarm_example/screens/edit_alarm.dart';
 import 'package:alarm_example/screens/ring.dart';
 import 'package:alarm_example/screens/shortcut_button.dart';
+import 'package:alarm_example/util/GroupAlarm.dart';
+import 'package:alarm_example/util/GroupAlarmStoarge.dart';
 import 'package:alarm_example/widgets/tile.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -16,7 +18,7 @@ class ExampleAlarmHomeScreen extends StatefulWidget {
 }
 
 class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
-  late List<AlarmSettings> alarms;
+  late List<GroupAlarm> alarms;
 
   static StreamSubscription<AlarmSettings>? subscription;
 
@@ -33,9 +35,11 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
 
   void loadAlarms() {
     setState(() {
-      alarms = Alarm.getAlarms();
-      alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+      alarms = GroupAlarmStorage.getAllGroupAlarms();
+      alarms.sort((a, b) => a.alarms[0].dateTime.isBefore(b.alarms[0].dateTime) ? 0 : 1);
     });
+  }
+  void loadGroupAlarms(){
   }
 
   Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
@@ -49,7 +53,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
     loadAlarms();
   }
 
-  Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
+  Future<void> navigateToAlarmScreen(GroupAlarm? groupAlarm) async {
     final res = await showModalBottomSheet<bool?>(
       context: context,
       isScrollControlled: true,
@@ -59,7 +63,8 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
       builder: (context) {
         return FractionallySizedBox(
           heightFactor: 0.75,
-          child: ExampleAlarmEditScreen(alarmSettings: settings),
+          // TODO 알람 요일 설정
+          child: AlarmEditScreen(groupAlarm: groupAlarm),
         );
       },
     );
@@ -118,14 +123,14 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
                 separatorBuilder: (context, index) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   return ExampleAlarmTile(
-                    key: Key(alarms[index].id.toString()),
+                    key: Key(alarms[index].groupId.toString()),
                     title: TimeOfDay(
-                      hour: alarms[index].dateTime.hour,
-                      minute: alarms[index].dateTime.minute,
-                    ).format(context),
+                      hour: alarms[index].alarms[0].dateTime.hour,
+                      minute: alarms[index].alarms[0].dateTime.minute,
+                    ).format(context)+alarms[index].getGroupAlarmWeekDays().toString(),
                     onPressed: () => navigateToAlarmScreen(alarms[index]),
                     onDismissed: () {
-                      Alarm.stop(alarms[index].id).then((_) => loadAlarms());
+                      GroupAlarmStorage.removeGroupAlarm(alarms[index].groupId).then((_) => loadAlarms());
                     },
                   );
                 },
@@ -147,6 +152,9 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
               onPressed: () => navigateToAlarmScreen(null),
               child: const Icon(Icons.alarm_add_rounded, size: 33),
             ),
+            FloatingActionButton(
+              heroTag: "button_hero1",
+                onPressed: loadGroupAlarms)
           ],
         ),
       ),

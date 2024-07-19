@@ -10,9 +10,12 @@
    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-   <application
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
         android:label="alarm_example"
         android:name="${applicationName}"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <service android:name="com.gdelataillade.alarm.services.NotificationOnKillService" />
         <activity
