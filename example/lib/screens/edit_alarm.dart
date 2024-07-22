@@ -89,27 +89,8 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
     }
   }
 
-  // AlarmSettings buildAlarmSettings() {
-  //   final id = creating
-  //       ? DateTime.now().millisecondsSinceEpoch % 10000 + 1
-  //       : widget.groupAlarm!.groupId;
-  //
-  //   final alarmSettings = AlarmSettings(
-  //     id: id,
-  //     dateTime: selectedDateTime,
-  //     loopAudio: loopAudio,
-  //     vibrate: vibrate,
-  //     volume: volume,
-  //     assetAudioPath: assetAudio,
-  //     notificationTitle: 'Alarm example',
-  //     notificationBody: 'Your alarm ($id) is ringing',
-  //     enableNotificationOnKill: Platform.isIOS,
-  //   );
-  //   return alarmSettings;
-  // }
-
   void saveAlarm() async{
-    if (loading) return;
+    if (loading || selectedWeekdays.isEmpty) return;
     setState(() => loading = true);
 
 
@@ -169,6 +150,14 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                 onPressed: saveAlarm,
                 child: loading
                     ? const CircularProgressIndicator()
+                    : selectedWeekdays.isEmpty
+                    ? Text(
+                        'Save',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Colors.grey),
+                      )
                     : Text(
                         'Save',
                         style: Theme.of(context)

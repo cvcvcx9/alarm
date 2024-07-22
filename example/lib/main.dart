@@ -16,7 +16,7 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       theme: ThemeData(useMaterial3: false),
-      home: LoginScreen(),
+      home: const ExampleAlarmHomeScreen(),
     ),
   );
 }

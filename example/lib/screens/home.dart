@@ -36,7 +36,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
   void loadAlarms() {
     setState(() {
       alarms = GroupAlarmStorage.getAllGroupAlarms();
-      alarms.sort((a, b) => a.alarms[0].dateTime.isBefore(b.alarms[0].dateTime) ? 0 : 1);
+      // alarms.sort((a, b) => a.alarms[0].dateTime.isBefore(b.alarms[0].dateTime) ? 0 : 1);
     });
   }
   void loadGroupAlarms(){
@@ -152,9 +152,6 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
               onPressed: () => navigateToAlarmScreen(null),
               child: const Icon(Icons.alarm_add_rounded, size: 33),
             ),
-            FloatingActionButton(
-              heroTag: "button_hero1",
-                onPressed: loadGroupAlarms)
           ],
         ),
       ),
