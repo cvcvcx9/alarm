@@ -8,8 +8,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  alarm:
-    path: ../
+  alarm: ^3.1.5
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter

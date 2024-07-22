@@ -4,9 +4,10 @@ packages:
   alarm:
     dependency: "direct main"
     description:
-      path: ".."
-      relative: true
-    source: path
+      name: alarm
+      sha256: a3c59567885550bca7a69d2c61d26d51ecea422e8a74540e03a755d7f68bb06f
+      url: "https://pub.dev"
+    source: hosted
     version: "3.1.5"
   async:
     dependency: transitive
