@@ -52,9 +52,6 @@ class _ExampleAlarmHomeShortcutButtonState
     return Row(
       children: [
         GestureDetector(
-          onLongPress: () {
-            setState(() => showMenu = true);
-          },
           child: FloatingActionButton(
             onPressed: () => onPressButton(0),
             backgroundColor: Colors.red,
@@ -62,24 +59,6 @@ class _ExampleAlarmHomeShortcutButtonState
             child: const Text('RING NOW', textAlign: TextAlign.center),
           ),
         ),
-        if (showMenu)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextButton(
-                onPressed: () => onPressButton(24),
-                child: const Text('+24h'),
-              ),
-              TextButton(
-                onPressed: () => onPressButton(36),
-                child: const Text('+36h'),
-              ),
-              TextButton(
-                onPressed: () => onPressButton(48),
-                child: const Text('+48h'),
-              ),
-            ],
-          ),
       ],
     );
   }

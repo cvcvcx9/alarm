@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alarm/alarm.dart';
 import 'package:alarm_example/screens/edit_alarm.dart';
+import 'package:alarm_example/screens/loginScreen.dart';
 import 'package:alarm_example/screens/ring.dart';
 import 'package:alarm_example/screens/shortcut_button.dart';
 import 'package:alarm_example/util/GroupAlarm.dart';
@@ -51,6 +52,13 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
       ),
     );
     loadAlarms();
+  }
+  Future<void> navigateToLoginScreen() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (context)=>
+        LoginScreen()
+      ));
   }
 
   Future<void> navigateToAlarmScreen(GroupAlarm? groupAlarm) async {
@@ -152,6 +160,9 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
               onPressed: () => navigateToAlarmScreen(null),
               child: const Icon(Icons.alarm_add_rounded, size: 33),
             ),
+            FloatingActionButton(onPressed: ()=>{
+              navigateToLoginScreen()
+            })
           ],
         ),
       ),

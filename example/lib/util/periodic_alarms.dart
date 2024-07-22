@@ -8,7 +8,13 @@ import 'package:flutter/material.dart';
 import 'GroupAlarm.dart';
 
 //
-Future<bool> periodicAlarms(int? groupId,List<int> days,int hour,int minute,String notificationTitle,String notificationBody,String assetAudioPath) async {
+Future<bool> periodicAlarms(
+  int? groupId,List<int> days,
+  int hour,
+  int minute,
+  String notificationTitle,
+  String notificationBody,
+  String assetAudioPath) async {
   const nbDays = 7; // Number of following days to potentially set alarm
   var time = TimeOfDay(hour: hour, minute: minute); // Time of the periodic alarm
   // Days of the week to set the alarm
